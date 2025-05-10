@@ -1,0 +1,8 @@
+robot_arm_node:
+  ros__parameters:
+    joint1_position: 0.0
+    joint2_position: 0.0
+    joint3_position: 0.0
+    joint4_position: 0.0
+    joint5_position: 0.0
+    joint6_position: 0.0

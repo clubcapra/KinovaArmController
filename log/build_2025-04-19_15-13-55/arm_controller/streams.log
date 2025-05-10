@@ -1,0 +1,28 @@
+[0.021s] Invoking command in '/home/blue/ros2_ws/src/arm_controller/build/arm_controller': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/blue/ros2_ws/src/arm_controller/build/arm_controller -- -j8 -l8
+[0.088s] [35m[1mConsolidate compiler generated dependencies of target arm_node[0m
+[0.119s] [ 33%] [32mBuilding CXX object CMakeFiles/arm_node.dir/src/main.cpp.o[0m
+[3.927s] [ 66%] [32m[1mLinking CXX executable arm_node[0m
+[4.333s] [100%] Built target arm_node
+[4.352s] Invoked command in '/home/blue/ros2_ws/src/arm_controller/build/arm_controller' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/blue/ros2_ws/src/arm_controller/build/arm_controller -- -j8 -l8
+[4.373s] Invoking command in '/home/blue/ros2_ws/src/arm_controller/build/arm_controller': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/blue/ros2_ws/src/arm_controller/build/arm_controller
+[4.382s] -- Install configuration: ""
+[4.382s] -- Execute custom install script
+[4.383s] -- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/lib/arm_controller/arm_node
+[4.400s] -- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller//launch/arm_launch.py
+[4.415s] -- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller//config/arm_params.yaml
+[4.426s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/ament_index/resource_index/package_run_dependencies/arm_controller
+[4.426s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/ament_index/resource_index/parent_prefix_path/arm_controller
+[4.427s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/environment/ament_prefix_path.sh
+[4.427s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/environment/ament_prefix_path.dsv
+[4.427s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/environment/path.sh
+[4.427s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/environment/path.dsv
+[4.427s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/local_setup.bash
+[4.427s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/local_setup.sh
+[4.428s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/local_setup.zsh
+[4.428s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/local_setup.dsv
+[4.428s] -- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/package.dsv
+[4.439s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/ament_index/resource_index/packages/arm_controller
+[4.439s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/cmake/arm_controllerConfig.cmake
+[4.439s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/cmake/arm_controllerConfig-version.cmake
+[4.439s] -- Up-to-date symlink: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/package.xml
+[4.441s] Invoked command in '/home/blue/ros2_ws/src/arm_controller/build/arm_controller' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/blue/ros2_ws/src/arm_controller/build/arm_controller

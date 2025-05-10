@@ -1,0 +1,22 @@
+[35m[1mConsolidate compiler generated dependencies of target arm_node[0m
+[100%] Built target arm_node
+-- Install configuration: ""
+-- Execute custom install script
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/lib/arm_controller/arm_node
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller//launch/arm_launch.py
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller//config/arm_params.yaml
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/ament_index/resource_index/package_run_dependencies/arm_controller
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/ament_index/resource_index/parent_prefix_path/arm_controller
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/environment/ament_prefix_path.sh
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/environment/ament_prefix_path.dsv
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/environment/path.sh
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/environment/path.dsv
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/local_setup.bash
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/local_setup.sh
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/local_setup.zsh
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/local_setup.dsv
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/package.dsv
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/ament_index/resource_index/packages/arm_controller
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/cmake/arm_controllerConfig.cmake
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/cmake/arm_controllerConfig-version.cmake
+-- Symlinking: /home/blue/ros2_ws/src/arm_controller/install/arm_controller/share/arm_controller/package.xml

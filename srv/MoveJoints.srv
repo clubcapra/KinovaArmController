@@ -1,0 +1,6 @@
+# Request
+float64[] velocities    
+---
+# Response
+bool    success
+string  message

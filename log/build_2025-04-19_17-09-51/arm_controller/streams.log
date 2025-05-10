@@ -1,0 +1,75 @@
+[0.018s] Invoking command in '/home/blue/ros2_ws/src/arm_controller/build/arm_controller': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/blue/ros2_ws/src/arm_controller/build/arm_controller -- -j8 -l8
+[0.091s] [35m[1mConsolidate compiler generated dependencies of target arm_controller_node[0m
+[0.113s] [ 25%] [32mBuilding CXX object CMakeFiles/arm_controller_node.dir/src/main.cpp.o[0m
+[0.113s] [ 50%] [32mBuilding CXX object CMakeFiles/arm_controller_node.dir/src/arm_controller_node.cpp.o[0m
+[0.115s] [ 75%] [32mBuilding CXX object CMakeFiles/arm_controller_node.dir/src/kinova_arm.cpp.o[0m
+[0.227s] In file included from [01m[K/home/blue/ros2_ws/src/arm_controller/src/kinova_arm.cpp:1[m[K:
+[0.227s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:10:22:[m[K [01;31m[Kerror: [m[K‘[01m[Ksize_t[m[K’ has not been declared
+[0.227s]    10 |     bool moveJointTo([01;31m[Ksize_t[m[K joint_id, double position);
+[0.227s]       |                      [01;31m[K^~~~~~[m[K
+[0.228s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:11:31:[m[K [01;31m[Kerror: [m[K‘[01m[Ksize_t[m[K’ has not been declared
+[0.228s]    11 |     void getJointInformations([01;31m[Ksize_t[m[K joint_id);
+[0.228s]       |                               [01;31m[K^~~~~~[m[K
+[0.228s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:14:27:[m[K [01;31m[Kerror: [m[K‘[01m[Ksize_t[m[K’ has not been declared
+[0.228s]    14 |     void sendJointCommand([01;31m[Ksize_t[m[K joint_id, double position);
+[0.228s]       |                           [01;31m[K^~~~~~[m[K
+[0.228s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:15:24:[m[K [01;31m[Kerror: [m[K‘[01m[Ksize_t[m[K’ has not been declared
+[0.228s]    15 |     void getJointState([01;31m[Ksize_t[m[K joint_id);
+[0.228s]       |                        [01;31m[K^~~~~~[m[K
+[0.411s] In file included from [01m[K/home/blue/ros2_ws/src/arm_controller/src/arm_controller_node.cpp:1[m[K:
+[0.411s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/arm_controller_node.hpp:7:10:[m[K [01;31m[Kfatal error: [m[Karm_controller/srv/move_to_position.hpp: No such file or directory
+[0.411s]     7 | #include [01;31m[K"arm_controller/srv/move_to_position.hpp"[m[K
+[0.411s]       |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[0.411s] compilation terminated.
+[0.414s] In file included from [01m[K/home/blue/ros2_ws/src/arm_controller/src/main.cpp:2[m[K:
+[0.414s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/arm_controller_node.hpp:7:10:[m[K [01;31m[Kfatal error: [m[Karm_controller/srv/move_to_position.hpp: No such file or directory
+[0.414s]     7 | #include [01;31m[K"arm_controller/srv/move_to_position.hpp"[m[K
+[0.414s]       |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[0.414s] compilation terminated.
+[0.416s] gmake[2]: *** [CMakeFiles/arm_controller_node.dir/build.make:90: CMakeFiles/arm_controller_node.dir/src/arm_controller_node.cpp.o] Error 1
+[0.416s] gmake[2]: *** Waiting for unfinished jobs....
+[0.419s] gmake[2]: *** [CMakeFiles/arm_controller_node.dir/build.make:76: CMakeFiles/arm_controller_node.dir/src/main.cpp.o] Error 1
+[0.441s] [01m[K/home/blue/ros2_ws/src/arm_controller/src/kinova_arm.cpp:12:6:[m[K [01;31m[Kerror: [m[Kno declaration matches ‘[01m[Kbool KinovaArm::moveJointTo(size_t, double)[m[K’
+[0.441s]    12 | bool [01;31m[KKinovaArm[m[K::moveJointTo(size_t joint_id, double position) {
+[0.441s]       |      [01;31m[K^~~~~~~~~[m[K
+[0.441s] In file included from [01m[K/home/blue/ros2_ws/src/arm_controller/src/kinova_arm.cpp:1[m[K:
+[0.442s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:10:10:[m[K [01;36m[Knote: [m[Kcandidate is: ‘[01m[Kbool KinovaArm::moveJointTo(int, double)[m[K’
+[0.442s]    10 |     bool [01;36m[KmoveJointTo[m[K(size_t joint_id, double position);
+[0.442s]       |          [01;36m[K^~~~~~~~~~~[m[K
+[0.444s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:4:7:[m[K [01;36m[Knote: [m[K‘[01m[Kclass KinovaArm[m[K’ defined here
+[0.444s]     4 | class [01;36m[KKinovaArm[m[K {
+[0.444s]       |       [01;36m[K^~~~~~~~~[m[K
+[0.445s] [01m[K/home/blue/ros2_ws/src/arm_controller/src/kinova_arm.cpp:18:6:[m[K [01;31m[Kerror: [m[Kno declaration matches ‘[01m[Kvoid KinovaArm::sendJointCommand(size_t, double)[m[K’
+[0.445s]    18 | void [01;31m[KKinovaArm[m[K::sendJointCommand(size_t joint_id, double position) {
+[0.445s]       |      [01;31m[K^~~~~~~~~[m[K
+[0.448s] In file included from [01m[K/home/blue/ros2_ws/src/arm_controller/src/kinova_arm.cpp:1[m[K:
+[0.448s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:14:10:[m[K [01;36m[Knote: [m[Kcandidate is: ‘[01m[Kvoid KinovaArm::sendJointCommand(int, double)[m[K’
+[0.448s]    14 |     void [01;36m[KsendJointCommand[m[K(size_t joint_id, double position);
+[0.448s]       |          [01;36m[K^~~~~~~~~~~~~~~~[m[K
+[0.449s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:4:7:[m[K [01;36m[Knote: [m[K‘[01m[Kclass KinovaArm[m[K’ defined here
+[0.449s]     4 | class [01;36m[KKinovaArm[m[K {
+[0.449s]       |       [01;36m[K^~~~~~~~~[m[K
+[0.449s] [01m[K/home/blue/ros2_ws/src/arm_controller/src/kinova_arm.cpp:22:6:[m[K [01;31m[Kerror: [m[Kno declaration matches ‘[01m[Kvoid KinovaArm::getJointInformations(size_t)[m[K’
+[0.449s]    22 | void [01;31m[KKinovaArm[m[K::getJointInformations(size_t joint_id) {
+[0.449s]       |      [01;31m[K^~~~~~~~~[m[K
+[0.449s] In file included from [01m[K/home/blue/ros2_ws/src/arm_controller/src/kinova_arm.cpp:1[m[K:
+[0.449s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:11:10:[m[K [01;36m[Knote: [m[Kcandidate is: ‘[01m[Kvoid KinovaArm::getJointInformations(int)[m[K’
+[0.449s]    11 |     void [01;36m[KgetJointInformations[m[K(size_t joint_id);
+[0.449s]       |          [01;36m[K^~~~~~~~~~~~~~~~~~~~[m[K
+[0.449s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:4:7:[m[K [01;36m[Knote: [m[K‘[01m[Kclass KinovaArm[m[K’ defined here
+[0.449s]     4 | class [01;36m[KKinovaArm[m[K {
+[0.449s]       |       [01;36m[K^~~~~~~~~[m[K
+[0.450s] [01m[K/home/blue/ros2_ws/src/arm_controller/src/kinova_arm.cpp:26:6:[m[K [01;31m[Kerror: [m[Kno declaration matches ‘[01m[Kvoid KinovaArm::getJointState(size_t)[m[K’
+[0.450s]    26 | void [01;31m[KKinovaArm[m[K::getJointState(size_t joint_id) {
+[0.450s]       |      [01;31m[K^~~~~~~~~[m[K
+[0.450s] In file included from [01m[K/home/blue/ros2_ws/src/arm_controller/src/kinova_arm.cpp:1[m[K:
+[0.450s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:15:10:[m[K [01;36m[Knote: [m[Kcandidate is: ‘[01m[Kvoid KinovaArm::getJointState(int)[m[K’
+[0.450s]    15 |     void [01;36m[KgetJointState[m[K(size_t joint_id);
+[0.450s]       |          [01;36m[K^~~~~~~~~~~~~[m[K
+[0.450s] [01m[K/home/blue/ros2_ws/src/arm_controller/include/arm_controller/kinova_arm.h:4:7:[m[K [01;36m[Knote: [m[K‘[01m[Kclass KinovaArm[m[K’ defined here
+[0.450s]     4 | class [01;36m[KKinovaArm[m[K {
+[0.450s]       |       [01;36m[K^~~~~~~~~[m[K
+[0.485s] gmake[2]: *** [CMakeFiles/arm_controller_node.dir/build.make:104: CMakeFiles/arm_controller_node.dir/src/kinova_arm.cpp.o] Error 1
+[0.486s] gmake[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/arm_controller_node.dir/all] Error 2
+[0.486s] gmake: *** [Makefile:146: all] Error 2
+[0.490s] Invoked command in '/home/blue/ros2_ws/src/arm_controller/build/arm_controller' returned '2': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/blue/ros2_ws/src/arm_controller/build/arm_controller -- -j8 -l8
