@@ -21,12 +21,9 @@ ArmControllerNode::ArmControllerNode()
 
     // -- Per-joint feedback publishers
     for (size_t i = 0; i < 6; ++i) {
-        temp_pubs_.push_back(this->create_publisher<std_msgs::msg::Float32>(
-            "arm_joint_" + std::to_string(i) + "_temperature", 10));
-        current_pubs_.push_back(this->create_publisher<std_msgs::msg::Float32>(
-            "arm_joint_" + std::to_string(i) + "_current", 10));
-        torque_pubs_.push_back(this->create_publisher<std_msgs::msg::Float32>(
-            "arm_joint_" + std::to_string(i) + "_torque", 10));
+        temp_pubs_.push_back(this->create_publisher<std_msgs::msg::Float32>("arm_joint_" + std::to_string(i) + "_temperature", 10));
+        current_pubs_.push_back(this->create_publisher<std_msgs::msg::Float32>("arm_joint_" + std::to_string(i) + "_current", 10));
+        torque_pubs_.push_back(this->create_publisher<std_msgs::msg::Float32>("arm_joint_" + std::to_string(i) + "_torque", 10));
     }
 
     feedback_timer_ = this->create_wall_timer(
