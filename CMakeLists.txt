@@ -11,6 +11,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
+find_package(trajectory_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)  
 
 # Include directories
@@ -29,6 +30,12 @@ add_executable(arm_controller_node
   src/KinovaArmController.cpp
 )
 
+add_executable(trajectory_controller_node
+  src/trajectory_main.cpp
+  src/trajectory_controller_node.cpp
+  src/KinovaArmController.cpp
+)
+
 ament_target_dependencies(arm_controller_node
   rclcpp
   std_msgs
@@ -36,13 +43,26 @@ ament_target_dependencies(arm_controller_node
   std_srvs
 )
 
+ament_target_dependencies(trajectory_controller_node
+  rclcpp
+  trajectory_msgs
+)
+
 # Link generated interfaces to the executable
 rosidl_target_interfaces(arm_controller_node
   ${PROJECT_NAME} "rosidl_typesupport_cpp"
 )
 
+rosidl_target_interfaces(trajectory_controller_node
+  ${PROJECT_NAME} "rosidl_typesupport_cpp"
+)
+
 # Install executable
 install(TARGETS arm_controller_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS trajectory_controller_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

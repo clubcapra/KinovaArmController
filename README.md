@@ -37,6 +37,21 @@ source ~/ros2_ws/install/setup.bash
 ros2 launch arm_controller arm_launch.py
 ```
 
+### Trajectory Controller
+To execute trajectories generated from an inverse kinematics solver, run the new
+`trajectory_controller_node`:
+
+```bash
+ros2 run arm_controller trajectory_controller_node
+```
+
+Send a `JointTrajectory` message containing the desired joint positions and
+timing. For example:
+
+```bash
+ros2 topic pub /joint_trajectory trajectory_msgs/msg/JointTrajectory "{\n  joint_names: ['joint1','joint2','joint3','joint4','joint5','joint6'],\n  points: [{positions: [0,0,0,0,0,0], time_from_start: {sec: 1}}, {positions: [1.0,0,0,0,0,0], time_from_start: {sec: 3}}]\n}"
+```
+
 Sends a velocity per seconds of 30 to the actuator0 of the arm
 ```bash
 ros2 topic pub /joint_velocities std_msgs/msg/Float64MultiArray "{data: [30,0,0,0,0,0]}"
