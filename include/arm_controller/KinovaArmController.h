@@ -15,12 +15,12 @@ public:
     ~KinovaArmController();
 
     // Zero in position
-    const double JOINT_0_ZERO = 185.00;
-    const double JOINT_1_ZERO = 180.00;
-    const double JOINT_2_ZERO = 180.00;
-    const double JOINT_3_ZERO = 180.00;
-    const double JOINT_4_ZERO = 180.00;
-    const double JOINT_5_ZERO = 40.00;
+    const float JOINT_0_ZERO = 185.00;
+    const float JOINT_1_ZERO = 180.00;
+    const float JOINT_2_ZERO = 180.00;
+    const float JOINT_3_ZERO = 180.00;
+    const float JOINT_4_ZERO = 180.00;
+    const float JOINT_5_ZERO = 40.00;
 
 
     // Core motion commands
@@ -37,7 +37,6 @@ public:
     std::vector<float> getJointsVelocities();
     std::vector<double> getJointsTorques();
     std::vector<double> getJointsCurrents();
-
     std::vector<float> getJointsTemperatures();
 
     // Query state (single joint, by index)
@@ -45,7 +44,7 @@ public:
     float getJointVelocity(size_t idx);
     double getJointTorque(size_t idx);
     double getJointCurrent(size_t idx);
-    double getJointTemperature(size_t idx);
+    float getJointTemperature(size_t idx);
 
     // Names
     std::vector<std::string> getJointNames() const;

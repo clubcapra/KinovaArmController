@@ -1,169 +1,131 @@
 #include "arm_controller/arm_controller_node.hpp"
+#include <sstream>
 
-#include <thread>
-#include <chrono>
+using namespace std::chrono_literals;
 
-// ===== Constructor =====
 ArmControllerNode::ArmControllerNode()
-    : Node("kinova_arm_controller_node"),
-      arm_("Kinova.API.UsbCommandLayerUbuntu.so")
+: Node("arm_controller_node"), arm_()
 {
-    // -- Command topic
-    joint_state_cmd_sub_ = this->create_subscription<sensor_msgs::msg::JointState>(
-        "command_joint_states", 10,
-        std::bind(&ArmControllerNode::jointStateCmdCb, this, std::placeholders::_1));
+    // All joints array publishers
+    positions_pub_    = create_publisher<std_msgs::msg::Float64MultiArray>("joints/positions", 10);
+    velocities_pub_   = create_publisher<std_msgs::msg::Float64MultiArray>("joints/velocities", 10);
+    torques_pub_      = create_publisher<std_msgs::msg::Float64MultiArray>("joints/torques", 10);
+    currents_pub_     = create_publisher<std_msgs::msg::Float64MultiArray>("joints/currents", 10);
+    temperatures_pub_ = create_publisher<std_msgs::msg::Float64MultiArray>("joints/temperatures", 10);
 
-    // -- Feedback publishers
-    joint_state_pub_   = this->create_publisher<sensor_msgs::msg::JointState>("arm_joint_states", 10);
-    joint_currents_pub_ = this->create_publisher<std_msgs::msg::Float32MultiArray>("arm_joint_currents", 10);
-    joint_temps_pub_    = this->create_publisher<std_msgs::msg::Float32MultiArray>("arm_joint_temperatures", 10);
-    joint_torques_pub_  = this->create_publisher<std_msgs::msg::Float32MultiArray>("arm_joint_torques", 10);
-
-    // -- Per-joint feedback publishers
-    for (size_t i = 0; i < 6; ++i) {
-        temp_pubs_.push_back(this->create_publisher<std_msgs::msg::Float32>("arm_joint_" + std::to_string(i) + "_temperature", 10));
-        current_pubs_.push_back(this->create_publisher<std_msgs::msg::Float32>("arm_joint_" + std::to_string(i) + "_current", 10));
-        torque_pubs_.push_back(this->create_publisher<std_msgs::msg::Float32>("arm_joint_" + std::to_string(i) + "_torque", 10));
+    // Per-joint publishers for all types of data
+    for (size_t i = 0; i < 6; ++i)
+    {
+        std::string joint_num = std::to_string(i+1);
+        per_joint_position_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("joint" + joint_num + "/position", 10));
+        per_joint_velocity_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("joint" + joint_num + "/velocity", 10));
+        per_joint_torque_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("joint" + joint_num + "/torque", 10));
+        per_joint_current_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("joint" + joint_num + "/current", 10));
+        per_joint_temperature_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("joint" + joint_num + "/temperature", 10));
     }
 
-    feedback_timer_ = this->create_wall_timer(
-        std::chrono::milliseconds(100),
-        std::bind(&ArmControllerNode::publishFeedback, this));
-
-    // -- Action server: FollowJointTrajectory
-    traj_action_server_ = rclcpp_action::create_server<FollowJointTrajectory>(
-        this,
-        "follow_joint_trajectory",
-        std::bind(&ArmControllerNode::handleGoal, this, std::placeholders::_1, std::placeholders::_2),
-        std::bind(&ArmControllerNode::handleCancel, this, std::placeholders::_1),
-        std::bind(&ArmControllerNode::handleAccepted, this, std::placeholders::_1)
+    timer_ = create_wall_timer(25ms, std::bind(&ArmControllerNode::timer_callback, this));
+    // Set positions (all)
+    set_positions_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
+        "/joints/setPositions",
+        10,
+        std::bind(&ArmControllerNode::set_positions_callback, this, std::placeholders::_1)
+    );
+    // Set velocities (all)
+    set_velocities_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
+        "/joints/setVelocities",
+        10,
+        std::bind(&ArmControllerNode::set_velocities_callback, this, std::placeholders::_1)
     );
 
-    // -- Home service
-    home_srv_ = this->create_service<std_srvs::srv::Trigger>(
-        "send_home",
-        std::bind(&ArmControllerNode::sendHomeService, this, std::placeholders::_1, std::placeholders::_2));
+    // Per-joint positions & velocities
+    const int joint_count = 6; // or whatever your DOF is
+    for (int i = 0; i < joint_count; ++i) {
+        // Per-joint position
+        auto pos_sub = this->create_subscription<std_msgs::msg::Float64>(
+            "/joint" + std::to_string(i+1) + "/setPosition",
+            10,
+            [this, i](const std_msgs::msg::Float64::SharedPtr msg) {
+                this->set_position_callback(msg, i);
+            }
+        );
+        set_position_subs_.push_back(pos_sub);
 
-    RCLCPP_INFO(this->get_logger(), "Kinova Arm Controller node started.");
-}
-
-// ===== Joint State Command (Topic) =====
-void ArmControllerNode::jointStateCmdCb(const sensor_msgs::msg::JointState::SharedPtr msg) {
-    if (msg->position.size() == 6) {
-        std::lock_guard<std::mutex> lock(arm_mutex_);
-        arm_.sendJointsPosition(msg->position);
-    } else {
-        RCLCPP_WARN(this->get_logger(), "Received JointState with %zu positions, expected 6.", msg->position.size());
+        // Per-joint velocity
+        auto vel_sub = this->create_subscription<std_msgs::msg::Float64>(
+            "/joint" + std::to_string(i+1) + "/setVelocity",
+            10,
+            [this, i](const std_msgs::msg::Float64::SharedPtr msg) {
+                this->set_velocity_callback(msg, i);
+            }
+        );
+        set_velocity_subs_.push_back(vel_sub);
     }
 }
 
-// ===== Feedback Publisher (Timer callback) =====
-void ArmControllerNode::publishFeedback() {
-    std::lock_guard<std::mutex> lock(arm_mutex_);
+// Set all joints position
+void ArmControllerNode::set_positions_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg) {
+    arm_.sendJointsPosition(msg->data); // expects vector<double>
+}
 
-    // --- Get values from driver
-    auto names     = arm_.getJointNames();
-    auto positions = arm_.getJointsPositions();
-    auto velocities= arm_.getJointsVelocities();
-    auto torques   = arm_.getJointsTorques();
-    auto currents  = arm_.getJointsCurrents();
-    auto temps     = arm_.getJointsTemperatures();
+// Set single joint position
+void ArmControllerNode::set_position_callback(const std_msgs::msg::Float64::SharedPtr msg, int idx) {
+    arm_.sendJointPosition(idx, msg->data); // expects idx, double
+}
 
-    // --- Publish joint state
-    sensor_msgs::msg::JointState js_msg;
-    js_msg.header.stamp = now();
-    js_msg.name         = names;
-    js_msg.position     = positions;
-    js_msg.velocity.assign(velocities.begin(), velocities.end());
-    js_msg.effort       = torques;
-    joint_state_pub_->publish(js_msg);
+// Set all joints velocity
+void ArmControllerNode::set_velocities_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg) {
+    std::vector<float> velocities(msg->data.begin(), msg->data.end());
+    arm_.sendJointsVelocity(velocities);
+}
 
-    // --- Publish all-joint arrays
-    std_msgs::msg::Float32MultiArray cur_msg, temp_msg, torq_msg;
-    for (size_t i = 0; i < 6; ++i) {
-        cur_msg.data.push_back(static_cast<float>(currents[i]));
-        temp_msg.data.push_back(static_cast<float>(temps[i]));
-        torq_msg.data.push_back(static_cast<float>(torques[i]));
+// Set single joint velocity
+void ArmControllerNode::set_velocity_callback(const std_msgs::msg::Float64::SharedPtr msg, int idx) {
+    arm_.sendJointVelocity(idx, msg->data);
+}
+
+void ArmControllerNode::timer_callback()
+{
+    // Query Kinova arm state
+    std::vector<double> positions    = arm_.getJointsPositions();
+    std::vector<float>  velocities   = arm_.getJointsVelocities();
+    std::vector<double> torques      = arm_.getJointsTorques();
+    std::vector<double> currents     = arm_.getJointsCurrents();
+    std::vector<float>  temperatures = arm_.getJointsTemperatures();
+
+    // Publish full array topics
+    publish_float64_multi_array(positions_pub_, positions);
+    publish_float64_multi_array(velocities_pub_, std::vector<double>(velocities.begin(), velocities.end()));
+    publish_float64_multi_array(torques_pub_,   torques);
+    publish_float64_multi_array(currents_pub_,  currents);
+    publish_float64_multi_array(temperatures_pub_, std::vector<double>(temperatures.begin(), temperatures.end()));
+
+    // Publish per-joint topics
+    for (size_t i = 0; i < 6; ++i)
+    {
+        publish_float64(per_joint_position_pubs_[i], positions[i]);
+        publish_float64(per_joint_velocity_pubs_[i], velocities[i]);
+        publish_float64(per_joint_torque_pubs_[i],   torques[i]);
+        publish_float64(per_joint_current_pubs_[i],  currents[i]);
+        publish_float64(per_joint_temperature_pubs_[i], temperatures[i]);
     }
-    joint_currents_pub_->publish(cur_msg);
-    joint_temps_pub_->publish(temp_msg);
-    joint_torques_pub_->publish(torq_msg);
-
-    // --- Publish per-joint topics
-    for (size_t i = 0; i < 6; ++i) {
-        std_msgs::msg::Float32 t, c, tq;
-        t.data  = static_cast<float>(temps[i]);
-        c.data  = static_cast<float>(currents[i]);
-        tq.data = static_cast<float>(torques[i]);
-        temp_pubs_[i]->publish(t);
-        current_pubs_[i]->publish(c);
-        torque_pubs_[i]->publish(tq);
-    }
 }
 
-// ===== Trajectory Action Server =====
-rclcpp_action::GoalResponse ArmControllerNode::handleGoal(
-    const rclcpp_action::GoalUUID &,
-    std::shared_ptr<const FollowJointTrajectory::Goal> goal)
+void ArmControllerNode::publish_float64_multi_array(
+    rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr pub,
+    const std::vector<double>& data)
 {
-    // Accept only if right number of joints and at least one point
-    if (goal->trajectory.points.empty() || goal->trajectory.joint_names.size() != 6)
-        return rclcpp_action::GoalResponse::REJECT;
-    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+    std_msgs::msg::Float64MultiArray msg;
+    msg.data = data;
+    pub->publish(msg);
 }
 
-rclcpp_action::CancelResponse ArmControllerNode::handleCancel(
-    const std::shared_ptr<rclcpp_action::ServerGoalHandle<FollowJointTrajectory>>)
+void ArmControllerNode::publish_float64(
+    rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr pub,
+    double value)
 {
-    // Accept cancelation (no actual preemption in this simple version)
-    return rclcpp_action::CancelResponse::ACCEPT;
+    std_msgs::msg::Float64 msg;
+    msg.data = value;
+    pub->publish(msg);
 }
 
-void ArmControllerNode::handleAccepted(
-    const std::shared_ptr<rclcpp_action::ServerGoalHandle<FollowJointTrajectory>> goal_handle)
-{
-    std::thread{std::bind(&ArmControllerNode::executeTrajectory, this, goal_handle)}.detach();
-}
-
-void ArmControllerNode::executeTrajectory(
-    const std::shared_ptr<rclcpp_action::ServerGoalHandle<FollowJointTrajectory>> goal_handle)
-{
-    const auto goal = goal_handle->get_goal();
-    auto result = std::make_shared<FollowJointTrajectory::Result>();
-
-    rclcpp::Time start = now();
-    for (const auto &pt : goal->trajectory.points) {
-        if (pt.positions.size() != 6) continue;
-        {
-            std::lock_guard<std::mutex> lock(arm_mutex_);
-            arm_.sendJointsPosition(pt.positions);
-        }
-        // Feedback (optional)
-        auto feedback = std::make_shared<FollowJointTrajectory::Feedback>();
-        feedback->joint_names = goal->trajectory.joint_names;
-        feedback->desired = pt;
-        feedback->actual.positions = arm_.getJointsPositions();
-        auto v = arm_.getJointsVelocities();
-        feedback->actual.velocities.assign(v.begin(), v.end());
-        goal_handle->publish_feedback(feedback);
-
-        // Wait (respect time_from_start)
-        auto now_time = now();
-        rclcpp::Duration time_to_wait = pt.time_from_start - (now_time - start);
-        if (time_to_wait.seconds() > 0)
-            rclcpp::sleep_for(std::chrono::duration<double>(time_to_wait.seconds()));
-    }
-    result->error_code = result->SUCCESSFUL;
-    goal_handle->succeed(result);
-}
-
-// ===== Service: Send Home =====
-void ArmControllerNode::sendHomeService(
-    const std::shared_ptr<std_srvs::srv::Trigger::Request>,
-    std::shared_ptr<std_srvs::srv::Trigger::Response> res)
-{
-    std::lock_guard<std::mutex> lock(arm_mutex_);
-    bool ok = arm_.sendToHome();
-    res->success = ok;
-    res->message = ok ? "Sent to home." : "Failed to home arm.";
-}

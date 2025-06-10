@@ -1,4 +1,4 @@
-#include "include/KinovaArmController.h"
+#include "arm_controller/KinovaArmController.h"
 #include <iostream>
 #include <dlfcn.h>
 #include <unistd.h>
@@ -179,7 +179,7 @@ double KinovaArmController::getJointCurrent(size_t idx) {
     return currents[idx];
 }
 
-double KinovaArmController::getJointTemperature(size_t idx) {
+float KinovaArmController::getJointTemperature(size_t idx) {
     auto temps = getJointsTemperatures();
     if (idx >= temps.size()) throw std::out_of_range("Invalid joint index");
     return temps[idx];
