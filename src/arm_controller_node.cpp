@@ -7,33 +7,33 @@ ArmControllerNode::ArmControllerNode()
 : Node("arm_controller_node"), arm_()
 {
     // All joints array publishers
-    positions_pub_    = create_publisher<std_msgs::msg::Float64MultiArray>("joints/positions", 10);
-    velocities_pub_   = create_publisher<std_msgs::msg::Float64MultiArray>("joints/velocities", 10);
-    torques_pub_      = create_publisher<std_msgs::msg::Float64MultiArray>("joints/torques", 10);
-    currents_pub_     = create_publisher<std_msgs::msg::Float64MultiArray>("joints/currents", 10);
-    temperatures_pub_ = create_publisher<std_msgs::msg::Float64MultiArray>("joints/temperatures", 10);
+    positions_pub_    = create_publisher<std_msgs::msg::Float64MultiArray>("kinova_arm/joints/positions", 10);
+    velocities_pub_   = create_publisher<std_msgs::msg::Float64MultiArray>("kinova_arm/joints/velocities", 10);
+    torques_pub_      = create_publisher<std_msgs::msg::Float64MultiArray>("kinova_arm/joints/torques", 10);
+    currents_pub_     = create_publisher<std_msgs::msg::Float64MultiArray>("kinova_arm/joints/currents", 10);
+    temperatures_pub_ = create_publisher<std_msgs::msg::Float64MultiArray>("kinova_arm/joints/temperatures", 10);
 
     // Per-joint publishers for all types of data
     for (size_t i = 0; i < 6; ++i)
     {
         std::string joint_num = std::to_string(i+1);
-        per_joint_position_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("joint" + joint_num + "/position", 10));
-        per_joint_velocity_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("joint" + joint_num + "/velocity", 10));
-        per_joint_torque_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("joint" + joint_num + "/torque", 10));
-        per_joint_current_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("joint" + joint_num + "/current", 10));
-        per_joint_temperature_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("joint" + joint_num + "/temperature", 10));
+        per_joint_position_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("kinova_arm/joint" + joint_num + "/position", 10));
+        per_joint_velocity_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("kinova_arm/joint" + joint_num + "/velocity", 10));
+        per_joint_torque_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("kinova_arm/joint" + joint_num + "/torque", 10));
+        per_joint_current_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("kinova_arm/joint" + joint_num + "/current", 10));
+        per_joint_temperature_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("kinova_arm/joint" + joint_num + "/temperature", 10));
     }
 
     timer_ = create_wall_timer(25ms, std::bind(&ArmControllerNode::timer_callback, this));
     // Set positions (all)
     set_positions_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
-        "/joints/setPositions",
+        "kinova_arm/joints/setPositions",
         10,
         std::bind(&ArmControllerNode::set_positions_callback, this, std::placeholders::_1)
     );
     // Set velocities (all)
     set_velocities_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
-        "/joints/setVelocities",
+        "kinova_arm/joints/setVelocities",
         10,
         std::bind(&ArmControllerNode::set_velocities_callback, this, std::placeholders::_1)
     );
@@ -43,7 +43,7 @@ ArmControllerNode::ArmControllerNode()
     for (int i = 0; i < joint_count; ++i) {
         // Per-joint position
         auto pos_sub = this->create_subscription<std_msgs::msg::Float64>(
-            "/joint" + std::to_string(i+1) + "/setPosition",
+            "kinova_arm/joint" + std::to_string(i+1) + "/setPosition",
             10,
             [this, i](const std_msgs::msg::Float64::SharedPtr msg) {
                 this->set_position_callback(msg, i);
@@ -53,7 +53,7 @@ ArmControllerNode::ArmControllerNode()
 
         // Per-joint velocity
         auto vel_sub = this->create_subscription<std_msgs::msg::Float64>(
-            "/joint" + std::to_string(i+1) + "/setVelocity",
+            "kinova_arm/joint" + std::to_string(i+1) + "/setVelocity",
             10,
             [this, i](const std_msgs::msg::Float64::SharedPtr msg) {
                 this->set_velocity_callback(msg, i);
