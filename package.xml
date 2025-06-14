@@ -8,6 +8,12 @@
 
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>trajectory_msgs</depend>
+
+  <build_depend>moveit_ros_planning_interface</build_depend>
+  <exec_depend>moveit_ros_planning_interface</exec_depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

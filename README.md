@@ -31,16 +31,36 @@ Download and install the Kinova SDK and GUI Tool
 - No Comments
 
 ### Source and Run
+Listen up for five minutes because this gets complicated really quick
+
+Step one is going to be installing moveit because its has some dependancies that for some reason cant be installed alone and the only doc they provide gives you how to set it up using their tutorial ( and because we are not bozos we dont want to push their code onto our codebase )
+
+so from the code pull you start by sourcing their examples ( assuming you setup a workspace already at mkdir -p ~/ros2_ws/src )
 ```bash
+cd ~/ros2_ws/src
+git clone -b humble https://github.com/moveit/moveit2_tutorials
+
+vcs import --recursive < moveit2_tutorials/moveit2_tutorials.repos
+
+sudo apt remove ros-$ROS_DISTRO-moveit*
+
+sudo apt update && rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
+
+cd ~/ros2_ws
+colcon build --mixin release --parallel-workers 1
+```
+
+then after that you can start compiling the arm_controller and arm_trajectory_controller
+
+```bash
+colcon build --mixin release --packages-select arm_trajectory_controller
 colcon build --symlink-install --packages-select arm_controller
 source ~/ros2_ws/install/setup.bash
 ros2 launch arm_controller arm_launch.py
+
 ```
 
-Sends a velocity per seconds of 30 to the actuator0 of the arm
-```bash
-ros2 topic pub /joint_velocities std_msgs/msg/Float64MultiArray "{data: [30,0,0,0,0,0]}"
-```
+
 
 <!-- ANNEX -->
 ## Annex
