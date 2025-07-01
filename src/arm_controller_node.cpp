@@ -1,5 +1,6 @@
 #include "arm_controller/arm_controller_node.hpp"
 #include <sstream>
+#include <trajectory_msgs/msg/joint_trajectory.hpp>
 
 using namespace std::chrono_literals;
 
@@ -24,25 +25,32 @@ ArmControllerNode::ArmControllerNode()
         per_joint_temperature_pubs_.push_back(create_publisher<std_msgs::msg::Float64>("kinova_arm/joint" + joint_num + "/temperature", 10));
     }
 
+    // Periodic timer for state publishing
     timer_ = create_wall_timer(25ms, std::bind(&ArmControllerNode::timer_callback, this));
+
     // Set positions (all)
-    set_positions_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
-        "kinova_arm/joints/setPositions",
-        10,
+    set_positions_sub_ = create_subscription<std_msgs::msg::Float64MultiArray>(
+        "kinova_arm/joints/setPositions", 10,
         std::bind(&ArmControllerNode::set_positions_callback, this, std::placeholders::_1)
     );
+
     // Set velocities (all)
-    set_velocities_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
-        "kinova_arm/joints/setVelocities",
-        10,
+    set_velocities_sub_ = create_subscription<std_msgs::msg::Float64MultiArray>(
+        "kinova_arm/joints/setVelocities", 10,
         std::bind(&ArmControllerNode::set_velocities_callback, this, std::placeholders::_1)
     );
 
+    // New: subscribe to JointTrajectory for multi-waypoint motion
+    set_trajectory_sub_ = create_subscription<trajectory_msgs::msg::JointTrajectory>(
+        "kinova_arm/joints/setTrajectory", 10,
+        std::bind(&ArmControllerNode::set_trajectory_callback, this, std::placeholders::_1)
+    );
+
     // Per-joint positions & velocities
-    const int joint_count = 6; // or whatever your DOF is
+    const int joint_count = 6;
     for (int i = 0; i < joint_count; ++i) {
         // Per-joint position
-        auto pos_sub = this->create_subscription<std_msgs::msg::Float64>(
+        auto pos_sub = create_subscription<std_msgs::msg::Float64>(
             "kinova_arm/joint" + std::to_string(i+1) + "/setPosition",
             10,
             [this, i](const std_msgs::msg::Float64::SharedPtr msg) {
@@ -52,7 +60,7 @@ ArmControllerNode::ArmControllerNode()
         set_position_subs_.push_back(pos_sub);
 
         // Per-joint velocity
-        auto vel_sub = this->create_subscription<std_msgs::msg::Float64>(
+        auto vel_sub = create_subscription<std_msgs::msg::Float64>(
             "kinova_arm/joint" + std::to_string(i+1) + "/setVelocity",
             10,
             [this, i](const std_msgs::msg::Float64::SharedPtr msg) {
@@ -65,12 +73,12 @@ ArmControllerNode::ArmControllerNode()
 
 // Set all joints position
 void ArmControllerNode::set_positions_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg) {
-    arm_.sendJointsPosition(msg->data); // expects vector<double>
+    arm_.sendJointsPosition(msg->data);
 }
 
 // Set single joint position
 void ArmControllerNode::set_position_callback(const std_msgs::msg::Float64::SharedPtr msg, int idx) {
-    arm_.sendJointPosition(idx, msg->data); // expects idx, double
+    arm_.sendJointPosition(idx, msg->data);
 }
 
 // Set all joints velocity
@@ -82,6 +90,38 @@ void ArmControllerNode::set_velocities_callback(const std_msgs::msg::Float64Mult
 // Set single joint velocity
 void ArmControllerNode::set_velocity_callback(const std_msgs::msg::Float64::SharedPtr msg, int idx) {
     arm_.sendJointVelocity(idx, msg->data);
+}
+
+// Set a trajectory of waypoints (each point must have 6 positions)
+void ArmControllerNode::set_trajectory_callback(
+    const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
+{
+    if (msg->points.empty()) {
+        RCLCPP_WARN(get_logger(), "Received empty trajectory");
+        return;
+    }
+
+    std::vector<std::vector<double>> trajectory;
+    trajectory.reserve(msg->points.size());
+
+    for (size_t i = 0; i < msg->points.size(); ++i) {
+        const auto &pt = msg->points[i];
+        if (pt.positions.size() != 6) {
+            RCLCPP_ERROR(
+                get_logger(),
+                "Trajectory point %zu has %zu positions, expected 6",
+                i, pt.positions.size()
+            );
+            return;
+        }
+        trajectory.emplace_back(pt.positions.begin(), pt.positions.end());
+    }
+
+    try {
+        arm_.sendJointsTrajectory(trajectory);
+    } catch (const std::exception &e) {
+        RCLCPP_ERROR(get_logger(), "Failed to send trajectory: %s", e.what());
+    }
 }
 
 void ArmControllerNode::timer_callback()
@@ -128,4 +168,3 @@ void ArmControllerNode::publish_float64(
     msg.data = value;
     pub->publish(msg);
 }
-

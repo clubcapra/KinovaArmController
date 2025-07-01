@@ -11,6 +11,7 @@
 #include "std_msgs/msg/float64.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "std_srvs/srv/set_bool.hpp"
+#include "trajectory_msgs/msg/joint_trajectory.hpp"
 #include "arm_controller/KinovaArmController.h"
 
 class ArmControllerNode : public rclcpp::Node
@@ -55,12 +56,18 @@ private:
     rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr set_velocities_sub_;
     std::vector<rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr> set_velocity_subs_;
 
+    rclcpp::Subscription<trajectory_msgs::msg::JointTrajectory>::SharedPtr set_trajectory_sub_;
+
+
     // Callback handlers
     void set_positions_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
     void set_position_callback(const std_msgs::msg::Float64::SharedPtr msg, int idx);
 
     void set_velocities_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
     void set_velocity_callback(const std_msgs::msg::Float64::SharedPtr msg, int idx);
+
+    void set_trajectory_callback(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg);
+
 
     // Names for standard joint_state message
     const std::vector<std::string> joint_names_ = {

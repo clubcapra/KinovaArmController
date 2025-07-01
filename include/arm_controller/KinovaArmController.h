@@ -1,3 +1,4 @@
+// KinovaArmController.h
 #pragma once
 
 #include "KinovaTypes.h"
@@ -14,37 +15,37 @@ public:
     explicit KinovaArmController(const std::string& library_path = "Kinova.API.UsbCommandLayerUbuntu.so");
     ~KinovaArmController();
 
-    // Zero in position
-    const float JOINT_0_ZERO = 185.00;
-    const float JOINT_1_ZERO = 180.00;
-    const float JOINT_2_ZERO = 180.00;
-    const float JOINT_3_ZERO = 180.00;
-    const float JOINT_4_ZERO = 180.00;
-    const float JOINT_5_ZERO = 40.00;
+    // Hardware “zero” offsets
+    const float JOINT_0_ZERO = 270.00f;
+    const float JOINT_1_ZERO = 180.00f;
+    const float JOINT_2_ZERO = 180.00f;
+    const float JOINT_3_ZERO = 180.00f;
+    const float JOINT_4_ZERO = 180.00f;
+    const float JOINT_5_ZERO =  40.00f;
 
-
-    // Core motion commands
+    // Core motion commands (positions now zero‐based)
     bool sendJointsVelocity(const std::vector<float>& velocities);
     bool sendJointsPosition(const std::vector<double>& positions);
-    
+
     bool sendJointVelocity(size_t idx, float velocity);
     bool sendJointPosition(size_t idx, double position);
+    bool sendJointsTrajectory(const std::vector<std::vector<double>>& trajectory);
 
     bool sendToHome();
 
-    // Query state (all joints)
+    // Query state (all joints; positions zero‐based)
     std::vector<double> getJointsPositions();
-    std::vector<float> getJointsVelocities();
+    std::vector<float>  getJointsVelocities();
     std::vector<double> getJointsTorques();
     std::vector<double> getJointsCurrents();
-    std::vector<float> getJointsTemperatures();
+    std::vector<float>  getJointsTemperatures();
 
     // Query state (single joint, by index)
     double getJointPosition(size_t idx);
-    float getJointVelocity(size_t idx);
+    float  getJointVelocity(size_t idx);
     double getJointTorque(size_t idx);
     double getJointCurrent(size_t idx);
-    float getJointTemperature(size_t idx);
+    float  getJointTemperature(size_t idx);
 
     // Names
     std::vector<std::string> getJointNames() const;
@@ -56,26 +57,26 @@ public:
     bool isInitialized() const;
 
 private:
-    int loadSymbols();
+    int  loadSymbols();
     void initialize(int result);
     void closeAPI();
     void ensureInitialized() const;
 
-    AngularPosition dataCommand;
-
-    AngularPosition dataPosition;
-    AngularPosition dataAngularPosition;
+    AngularPosition   dataCommand;
+    AngularPosition   dataPosition;
+    AngularPosition   dataAngularPosition;
     GeneralInformations dataGeneral;
 
-    void * commandLayer_handle;
-    bool initialized_;
+    void* commandLayer_handle = nullptr;
+    bool  initialized_;
 
-    // Function pointers (loaded via dlsym)
+    // Function pointers...
     int (*MyInitAPI)();
     int (*MyCloseAPI)();
     int (*MySendBasicTrajectory)(TrajectoryPoint command);
     int (*MyGetDevices)(KinovaDevice devices[MAX_KINOVA_DEVICE], int &result);
     int (*MySetActiveDevice)(KinovaDevice device);
+    int (*MySendAdvanceTrajectory)(TrajectoryPoint);
 
     int (*MyStartForceControl)();
     int (*MyStopForceControl)();
