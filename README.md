@@ -53,10 +53,40 @@ colcon build --mixin release --parallel-workers 1
 then after that you can start compiling the arm_controller and arm_trajectory_controller
 
 ```bash
-colcon build --mixin release --packages-select arm_trajectory_controller
 colcon build --symlink-install --packages-select arm_controller
+colcon build --mixin release --packages-select arm_trajectory_controller
+colcon build --symlink-install --packages-select rove_config
+
 source ~/ros2_ws/install/setup.bash
 ros2 launch arm_controller arm_launch.py
+`
+```
+
+```bash
+colcon build --symlink-install --packages-select arm_controller
+colcon build --mixin release --packages-select arm_trajectory_controller
+
+colcon build --symlink-install --packages-select rove_description
+colcon build --symlink-install --packages-select rove_config
+
+source ~/ros2_ws/install/setup.bash
+
+ros2 launch foxglove_bridge foxglove_bridge_launch.xml
+
+ros2 launch arm_controller arm_launch.py
+ros2 launch arm_controller arm_test_launch.py
+
+ros2 launch arm_trajectory_controller arm_trajectory_controller.launch.py
+
+export QT_QPA_PLATFORM=xcb
+export OGRE_RHI=GL3
+ros2 launch rove_config servo_example.launch.py
+
+export QT_QPA_PLATFORM=xcb
+export OGRE_RHI=GL3
+ros2 launch rove_config demo.launch.py
+
+ros2 run rove_config servo_keyboard_input
 
 ```
 
