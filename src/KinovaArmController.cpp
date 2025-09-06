@@ -9,12 +9,12 @@
 
 // Hardware zero offsets and per-joint sign flips
 static const double ZERO_OFFSETS[6] = {
-    185.00,  // joint 1 hardware zero
+    180.00,  // joint 1 hardware zero
     180.00,  // joint 2
-    180.00,  // joint 3
-    180.00,  // joint 4
-    180.00,  // joint 5
-     40.00   // joint 6
+    185.00,  // joint 3
+    170.00,  // joint 4
+    185.00,  // joint 5
+     0.00   // joint 6
 };
 static const int SIGN[6] = {
     1,  // joint 1
